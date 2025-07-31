@@ -159,8 +159,20 @@ function createFloatingHearts() {
 }
 
 // ===== Diary Logic =====
-const API_URL = 'http://localhost:4000/api/entries';
+const API_URL = 'https://manargift-4i1odui0j-thelight1231s-projects.vercel.app/api/entries';
 let currentUser = localStorage.getItem('chatUser');
+
+// Configure fetch to include credentials for CORS
+const fetchWithCors = (url, options = {}) => {
+    return fetch(url, {
+        ...options,
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            ...(options.headers || {})
+        }
+    });
+};
 
 async function saveDiaryEntry() {
     const diaryText = document.getElementById('diaryText').value.trim();
@@ -181,9 +193,9 @@ async function saveDiaryEntry() {
     };
 
     try {
-        const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newEntry) });
-        if (!res.ok) throw new Error('خطأ في حفظ المذكرة');
-        const saved = await res.json();
+        const response = await fetchWithCors(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newEntry) });
+        if (!response.ok) throw new Error('خطأ في حفظ المذكرة');
+        const saved = await response.json();
         addEntryToPage(saved);
         showNotification('تم حفظ المذكرات بنجاح! 💖');
         document.getElementById('diaryText').value = '';
